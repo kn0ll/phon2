@@ -1,0 +1,31 @@
+{
+  "name": "phon2",
+  "author": "catshirt <caden@catshirt.net>",
+  "description": "geometry instrument",
+  "keywords": [
+    "phon",
+    "phon2"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/catshirt/phon2"
+  },
+  "dependencies": {
+    "grunt": "0.4.0rc6",
+    "grunt-cli": "0.1.6",
+    "grunt-contrib-clean": "0.4.0",
+    "grunt-contrib-copy": "git://github.com/gruntjs/grunt-contrib-copy.git",
+    "grunt-contrib-connect": "0.1.0",
+    "grunt-contrib-coffee": "git://github.com/gruntjs/grunt-contrib-coffee.git",
+    "grunt-contrib-livereload": "0.1.0rc8",
+    "grunt-open": "~0.1.0",
+    "grunt-regarde": "~0.1.1"
+  },
+  "engines": {
+    "node": ">=0.8.12"
+  },
+  "version": "0.0.1",
+  "devDependencies": {
+    "express": "~3.1.0"
+  }
+}
