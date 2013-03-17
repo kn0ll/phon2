@@ -25,6 +25,7 @@ define [
     constructor: ->
       super
       @group = new THREE.Object3D
+      window.group = @group
       @columnViews = []
       @collection.on 'add', @addColumn, @
 
@@ -39,9 +40,16 @@ define [
       @columnViews[x] = columnView
       @group.add columnView.render()
 
+    findCellByMesh: (mesh) ->
+      model = false
+      _.each @columnViews, (columnView) ->
+        for cellView in columnView.cellViews
+          model = cellView.model if mesh is cellView.mesh
+      model
+
     # render should add each collection to
     # the group
     render: ->
       @collection.each (column) =>
         @addColumn(column)
-      @group
+      @

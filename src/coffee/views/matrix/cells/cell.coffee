@@ -46,15 +46,16 @@ define [
       @mesh = new THREE.Mesh(shape3d, material)
       THREE.GeometryUtils.center shape3d
 
-      # bind occupied to mesh change
-      cell.on 'change:occupied', @changeMesh, @
+      # bind state changes to view changes
+      cell.on 'change:occupied', @onOccupiedChange, @
+      cell.on 'change:selected', @onSelectedChange, @
 
     # render sets the position and scale
     # and returns the mesh
     render: ->
       x = @options.left
       y = @options.top
-      z = 0;
+      z = 0
       @mesh.position.set x, y, z
       @mesh.rotation.set 0, 0, 0
       @mesh.scale.set 1, 1, 1
@@ -64,8 +65,15 @@ define [
     remove: ->
       @options.group.remove @mesh
 
-    # change mesh
-    changeMesh: (cell, occupied) ->
+    # set occupied cell to blue
+    onOccupiedChange: (cell, occupied) ->
+      return if cell.get('selected')
       color = if occupied then 0x77D5D8 else @options.color
+      material = new THREE.MeshLambertMaterial({ color: color })
+      @mesh.material = material
+
+    # set selected cell to
+    onSelectedChange: (cell, selected) ->
+      color = if selected then 0xFDC648 else @options.color
       material = new THREE.MeshLambertMaterial({ color: color })
       @mesh.material = material

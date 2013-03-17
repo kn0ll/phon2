@@ -19,9 +19,11 @@ define [
       @renderer = new THREE.CanvasRenderer()
       @scene = new THREE.Scene()
       @camera = new THREE.PerspectiveCamera(100, 1, 1, 1000)
+      @camera.position.z = 200
+      @camera.position.x = 70
+      @camera.position.y = -110
 
       # setup scene
-      @camera.position.z = 200
       @renderer.setSize width, height
 
       # set canvas as el

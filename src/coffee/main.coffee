@@ -7,34 +7,33 @@ require [
   'models/matrix/cells/redirector',
   'models/phon/phon',
   'views/matrix/matrix',
+  'views/phon/phon',
   'views/scene'
 ], (context, BoidController, Matrix,
   EmitterCell, NoteCell, RedirectorCell,
-  Phon, MatrixView, SceneView) ->
+  Phon, MatrixView, PhonView, SceneView) ->
 
   # create matrix / boids
   matrix = new Matrix(5, 5)
   boidController = new BoidController
     matrix: matrix
+  boidController.start()
 
   # create instrument
   phon = new Phon(context, boidController)
-  phon.connect(context.output)
+  #phon.connect(context.output)
 
   # create scene
   sceneView = new SceneView
-  matrixView = new MatrixView(collection: matrix)
-  matrixGroup = matrixView.render()
-
-  # position scene
-  sceneView.camera.position.z = 300
-  matrixGroup.rotation.x = -1.2
-  do =>
-    matrixGroup.rotation.z += .002
-    webkitRequestAnimationFrame(arguments.callee)
-
-  # render scene
-  sceneView.add(matrixGroup)
+  matrixView = new MatrixView
+    collection: matrix
+  phonView = new PhonView
+    camera: sceneView.camera
+    el: sceneView.el
+    group: matrixView.render().group
+    collection: matrix
+    matrixView: matrixView
+  sceneView.add(matrixView.group)
   $('body').append(sceneView.render().el)
 
   # create board
@@ -52,6 +51,3 @@ require [
     x: 1
     y: 4
     direction: 'n'
-
-  # start game
-  boidController.start()

@@ -3,9 +3,8 @@ define [
   'core/context',
   'models/matrix/matrix',
   'models/boids/boids',
-  'models/matrix/cells/note',
   'models/matrix/cells/emitter'
-], (_, context, PhonMatrix, Boids, NoteCell, EmitterCell) ->
+], (_, context, PhonMatrix, Boids, EmitterCell) ->
 
   # a boid controller is responsible for navigating
   # boids around a matrix as well as providing an external
@@ -19,6 +18,7 @@ define [
     initialize: (attrs, options) ->
       super
       scheduler = context.scheduler
+      # todo: matrix should not be attr
       @matrix = attrs.matrix
       @boids = new Boids()
       scheduler.beatsPerBar = 4
@@ -29,11 +29,9 @@ define [
         oldX = boid.previous('x')
         oldY = boid.previous('y')
         old_cell = @matrix.get(oldX, oldY)
-        old_cell_is_note = old_cell instanceof NoteCell
         x = boid.get('x')
         y = boid.get('y')
         cell = @matrix.get(x, y)
-        cell_is_note = cell instanceof NoteCell
 
         # set the occupied attribute of the cells
         old_cell.set('occupied', false)
@@ -43,26 +41,24 @@ define [
         # if the new / old cell were `note` cells
         # todo: this should be bound to occupied, not triggered
         #       adjacent to
-        @trigger('noteOff', old_cell) if old_cell_is_note
-        @trigger('noteOn', cell) if cell_is_note
+        @trigger('move', old_cell, false)
+        @trigger('move', cell, true)
 
       # when a new boid is created, set it's cells occupied
       @boids.on 'add', (boid) =>
         x = boid.get('x')
         y = boid.get('y')
         cell = @matrix.get(x, y)
-        cell_is_note = cell instanceof NoteCell
         cell.set('occupied', true)
-        @trigger('noteOn', cell) if cell_is_note
+        @trigger('move', cell, true)
 
       # when a new boid is removed, set it's cells occupied
       @boids.on 'remove', (boid) =>
         x = boid.get('x')
         y = boid.get('y')
         cell = @matrix.get(x, y)
-        cell_is_note = cell instanceof NoteCell
         cell.set('occupied', false)
-        @trigger('noteOff', cell) if cell_is_note
+        @trigger('move', cell, false)
 
     # bind tick to the audiolet scheduler
     start: ->
@@ -72,7 +68,7 @@ define [
         @tick scheduler.beatInBar
 
     # tick is the main logic responsible
-    # for moving boids around (maybe this should be logic
+    # for moving boids around (todo: maybe this should be logic
     # of boids themselves)
     tick: (beat) ->
       matrix = @matrix

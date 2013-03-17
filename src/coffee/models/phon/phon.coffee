@@ -1,6 +1,7 @@
 define [
-  'audiolet'
-], (Audiolet) ->
+  'audiolet',
+  'models/matrix/cells/note'
+], (Audiolet, NoteCell) ->
 
   # a phon is an audioletgroup which plays things based
   # on the events of a boidController
@@ -11,13 +12,14 @@ define [
       @instrument = new Instrument(audiolet)
       @gain = new Gain(audiolet, 0.05)
 
-      # proxy boidController events to midi notes
-      doNote = (note) =>
-        (cell) =>
-          @instrument.midi note, cell.get('key'), cell.get('velocity')
-
-      boidController.on 'noteOn', doNote(144)
-      boidController.on 'noteOff', doNote(128)
+      # when a boid moves in or out of a cell
+      # play things based on type of cell
+      boidController.on 'move', (cell, occupied) =>
+        key = cell.get('key')
+        velocity = cell.get('velocity')
+        if cell instanceof NoteCell
+          note = if occupied then 144 else 128
+          @instrument.midi note, key, velocity
 
       # route instrument
       @instrument.connect(@gain)
