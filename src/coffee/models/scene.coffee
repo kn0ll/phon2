@@ -6,5 +6,5 @@ define [
   class extends Backbone.Model
     
     defaults:
-      width: 500
-      height: 500
+      width: window.innerWidth
+      height: window.innerHeight

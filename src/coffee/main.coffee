@@ -14,14 +14,14 @@ require [
   Phon, MatrixView, PhonView, SceneView) ->
 
   # create matrix / boids
-  matrix = new Matrix(5, 5)
+  matrix = new Matrix(8, 5)
   boidController = new BoidController
     matrix: matrix
   boidController.start()
 
   # create instrument
   phon = new Phon(context, boidController)
-  #phon.connect(context.output)
+  phon.connect(context.output)
 
   # create scene
   sceneView = new SceneView
@@ -48,6 +48,6 @@ require [
     direction: 'se'
 
   boidController.setCell new EmitterCell
-    x: 1
-    y: 4
-    direction: 'n'
+    x: 0
+    y: 5
+    direction: 'ne'

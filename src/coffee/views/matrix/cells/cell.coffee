@@ -15,7 +15,7 @@ define [
       top: 0
       left: 0
       sideLength: 30
-      depth: 20
+      depth: 10
       group: null
       color: 0x707C80
 
@@ -42,13 +42,16 @@ define [
 
       # create and center the 3d mesh
       shape3d = shape.extrude(extrudeSettings)
-      material = new THREE.MeshBasicMaterial({ color: color })
-      @mesh = new THREE.Mesh(shape3d, material)
+      @mesh = new THREE.Mesh(shape3d, @material())
       THREE.GeometryUtils.center shape3d
 
       # bind state changes to view changes
       cell.on 'change:occupied', @onOccupiedChange, @
       cell.on 'change:selected', @onSelectedChange, @
+
+    material: ->
+      color = @options.color
+      new THREE.MeshBasicMaterial({ color: color, wireframe: true, wireframeLinewidth: 1 })
 
     # render sets the position and scale
     # and returns the mesh
@@ -68,12 +71,16 @@ define [
     # set occupied cell to blue
     onOccupiedChange: (cell, occupied) ->
       return if cell.get('selected')
-      color = if occupied then 0x77D5D8 else @options.color
-      material = new THREE.MeshLambertMaterial({ color: color })
+      if occupied
+        material = new THREE.MeshLambertMaterial({ color: 0x77D5D8 })
+      else
+        material = @material()
       @mesh.material = material
 
-    # set selected cell to
-    onSelectedChange: (cell, selected) ->
-      color = if selected then 0xFDC648 else @options.color
-      material = new THREE.MeshLambertMaterial({ color: color })
+    # set selected cell to yellow
+    onSelectedChange: (cell, occupied) ->
+      if occupied
+        material = new THREE.MeshLambertMaterial({ color: 0xFDC648, wireframe: true, wireframeLinewidth: 1 })
+      else
+        material = @material()
       @mesh.material = material

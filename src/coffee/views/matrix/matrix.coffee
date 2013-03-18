@@ -20,7 +20,7 @@ define [
   class extends Backbone.View
 
     options:
-      padding: 5
+      padding: 10
 
     constructor: ->
       super

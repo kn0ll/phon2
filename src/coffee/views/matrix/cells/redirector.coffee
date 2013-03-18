@@ -10,3 +10,7 @@ define [
     options: _.extend({}, CellView::options, {
       color: 0x02A797
     })
+
+    material: ->
+      color = @options.color
+      new THREE.MeshBasicMaterial({ color: color, wireframeLinewidth: 2 })

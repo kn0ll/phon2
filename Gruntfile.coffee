@@ -1,102 +1,117 @@
+nconf = require('nconf')
+
+defaults =
+  src: 'src'      # --src=www
+  www: 'dist/dev' # --www=dist/dev
+  port: 8888      # --port=8888
+
+nconf
+  .argv()
+  .env()
+  .defaults(defaults)
+
 module.exports = (grunt) ->
+  src = nconf.get('src')
+  www = nconf.get('www')
+  port = nconf.get('port')
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-connect'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-livereload'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-contrib-sass'
   grunt.loadNpmTasks 'grunt-open'
   grunt.loadNpmTasks 'grunt-regarde'
 
   grunt.initConfig
 
-    # empty dirs for builds
     clean:
-      dist: ['dist/*']
+      www: ["#{www}/*"]
 
-    # compiles all .coffee files in coffee/* and moves them into js/*
-    coffee:
-      
-      compile:
-        files: grunt.file.expandMapping(['src/coffee/**/*.coffee'], 'dist/js/',
-          rename: (destBase, destPath) ->
-            destBase + destPath.replace(/\.coffee$/, '.js').replace(/src\/coffee\//, ''))
-        options:
-          bare: true
+    coffee: 
+      compile: 
+        expand: true
+        cwd: "#{src}/coffee"
+        src: ["**/*.coffee"]
+        dest: "#{www}/js"
+        ext: '.js'
 
-    # copies all .js files in coffee/* and moves them into js/*
-    # this allows us to put js sources directly inside the coffee
-    # directory and use them as normal dependencies
+    sass: 
+      compile: 
+        expand: true
+        cwd: "#{src}/sass"
+        src: ["**/*.sass"]
+        dest: "#{www}/css"
+        ext: '.css'
+
     copy:
-      
-      html:
-        files: grunt.file.expandMapping(['src/*.html'], 'dist/',
-          rename: (destBase, destPath) ->
-            destBase + destPath.replace(/\.html$/, '.html').replace(/src\//, ''))
-      
       js:
-        files: grunt.file.expandMapping(['src/coffee/**/*.js'], 'dist/js/',
-          rename: (destBase, destPath) ->
-            destBase + destPath.replace(/\.js$/, '.js').replace(/src\/coffee\//, ''))
+        expand: true
+        cwd: "#{src}/coffee"
+        src: ["**/*.js"]
+        dest: "#{www}/js"
+      misc:
+        expand: true
+        cwd: "#{src}"
+        src: ["*.*"]
+        dest: "#{www}"
 
-    # watch for changes to any source files
-    # and recompile them or copy them accordingly
-    regarde:
+    regarde: 
+      coffee: 
+        files: ["#{src}/coffee/**/*.coffee"]
+        tasks: ["coffee:change"]
+      sass: 
+        files: ["#{src}/sass/**/*.sass"]
+        tasks: ["sass:change"]
+      js: 
+        files: ["#{src}/coffee/**/*.js"]
+        tasks: ["copy:js"]
+      misc: 
+        files: ["#{src}/*.*"]
+        tasks: ["copy:misc"]
+      livereload: 
+        files: ["#{www}/**/*"]
+        tasks: ["livereload"]
 
-      coffee:
-        files: 'src/coffee/**/*.coffee'
-        tasks: ['coffee']
-
-      js:
-        files: 'src/coffee/**/*.js'
-        tasks: ['copy:js']
-
-      html:
-        files: 'src/**/*.html'
-        tasks: ['copy:html']
-
-      livereload:
-        files: ['dist/**/*']
-        tasks: ['livereload']
+    connect:
+      www:
+        options:
+          port: port
+          base: www
 
     open:
+      www:
+        url: "http://localhost:#{port}"
 
-      server:
-        url: 'http://localhost:8000'
+  # wrapper to rerun a grunt task. checks regards
+  # changed files, updates the task configuration,
+  # and reruns the task.
+  createChangeTask = (task) ->
+    grunt.registerTask "#{task}:change", ->
+      conf = grunt.config
+      cwd = conf.get "#{task}.compile.cwd"
+      files = grunt.regarde.changed
 
-  grunt.registerTask 'server', ->
-    fs = require('fs')
-    express = require('express')
-    app = express()
-    directories = ['js']
+      conf.set "#{task}.compile.src", files.map (changed) ->
+        changed.split(cwd)[1].slice(1)
+      grunt.task.run "#{task}:compile"
 
-    for directory in directories
-      app.get '/' + [directory, '*?'].join('/'), (req, res, next) ->
-        path = req.url.split('?')[0]
-        res.sendfile 'dist' + path, {}, (err) ->
-          res.send(404) if err
+  grunt.registerTask createChangeTask('coffee')
+  grunt.registerTask createChangeTask('sass')
 
-    app.get /(.+)?/, (req, res) ->
-      index = fs.readFileSync(['dist', 'index.html'].join('/'), 'utf8')
-      res.send(index)
+  grunt.registerTask 'build', [
+    'clean',
+    'copy',
+    'coffee:compile',
+    'sass:compile']
 
-    app.listen(8000)
-  
-  # compile all source files in src/coffee/
-  grunt.registerTask 'compile-coffee', [
-    'coffee',
-    'copy:js']
-
-  # compile/copy all sources into dist/
-  grunt.registerTask 'build-dist', [
-    'clean:dist',
-    'compile-coffee',
-    'copy:html']
-
-  # default
-  grunt.registerTask 'default', [
-    'build-dist',
-    'server',
+  grunt.registerTask 'develop', [
     'livereload-start',
+    'connect',
     'open',
     'regarde']
+
+  grunt.registerTask 'default', [
+    'build',
+    'develop']
