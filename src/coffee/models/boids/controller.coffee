@@ -1,27 +1,22 @@
 define [
   'underscore',
-  'core/context',
-  'models/matrix/matrix',
-  'models/boids/boids',
-  'models/matrix/cells/emitter'
-], (_, context, PhonMatrix, Boids, EmitterCell) ->
+  'audio/scheduler',
+  'models/boids/boid'
+], (_, scheduler, Boid) ->
+
+  class Boids extends Backbone.Collection
+    
+    model: Boid
 
   # a boid controller is responsible for navigating
   # boids around a matrix as well as providing an external
   # interface to listen to different cells being occupied.
   class extends Backbone.Model
-    
-    defaults:
-      cols: 5
-      rows: 5
 
-    initialize: (attrs, options) ->
-      super
-      scheduler = context.scheduler
-      # todo: matrix should not be attr
-      @matrix = attrs.matrix
+    initialize: (matrix) ->
+      Backbone.Model::initialize.apply @
+      @matrix = matrix
       @boids = new Boids()
-      scheduler.beatsPerBar = 4
 
       # when a boid changes movement,
       # set the appropriate `cell` occupied states.
@@ -62,7 +57,6 @@ define [
 
     # bind tick to the audiolet scheduler
     start: ->
-      scheduler = context.scheduler
       sequence = new PSequence([true], Infinity)
       scheduler.play sequence, 1, =>
         @tick scheduler.beatInBar
@@ -78,16 +72,18 @@ define [
 
       # move each boid currently on the matrix
       boids.each (boid) ->
-        adjacent = matrix.getAdjacent(boid)
+        x = boid.get('x')
+        y = boid.get('y')
+        direction = boid.get('direction')
+        adjacent = matrix.getAdjacent(x, y, direction)
 
         # if there is a cell to move into,
         # move there
         if adjacent
-          x = adjacent.get('x')
-          y = adjacent.get('y')
+          coords = matrix.getCellCoords(adjacent)
           boid.set
-            x: x,
-            y: y
+            x: coords.x
+            y: coords.y
 
         # otherwise it's hit the end of the board
         else
@@ -101,16 +97,13 @@ define [
       # a boid next to it
       if beat is 0
         emitters = _(cells).filter (cell) ->
-          cell instanceof EmitterCell
+          cell.get('type') is 'emitter'
         _(emitters).each (emitter) ->
-          adjacent = matrix.getAdjacent(emitter)
-          x = adjacent.get('x')
-          y = adjacent.get('y')
+          direction = emitter.get('direction')
+          coords = matrix.getCellCoords(emitter)
+          adjacent = matrix.getAdjacent(coords.x, coords.y, direction)
+          new_coords = matrix.getCellCoords(adjacent)
           boids.add
-            x: x,
-            y: y,
-            direction: emitter.get('direction')
-
-    # sets a cell on the matrix
-    setCell: (cell) ->
-      @matrix.set cell
+            x: new_coords.x
+            y: new_coords.y
+            direction: direction

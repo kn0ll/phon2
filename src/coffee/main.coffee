@@ -1,53 +1,49 @@
 require [
-  'core/context',
+  'audio/output',
   'models/boids/controller',
   'models/matrix/matrix',
-  'models/matrix/cells/emitter',
-  'models/matrix/cells/note',
-  'models/matrix/cells/redirector',
-  'models/phon/phon',
+  'audio/phon',
   'views/matrix/matrix',
-  'views/phon/phon',
+  'views/tools',
   'views/scene'
-], (context, BoidController, Matrix,
-  EmitterCell, NoteCell, RedirectorCell,
-  Phon, MatrixView, PhonView, SceneView) ->
+], (output, BoidController, Matrix, Phon,
+  MatrixView, ToolsView, SceneView) ->
 
   # create matrix / boids
   matrix = new Matrix(8, 5)
-  boidController = new BoidController
-    matrix: matrix
-  boidController.start()
+  boidController = new BoidController(matrix)
 
   # create instrument
-  phon = new Phon(context, boidController)
-  phon.connect(context.output)
+  phon = new Phon(boidController)
 
   # create scene
-  sceneView = new SceneView
-  matrixView = new MatrixView
-    collection: matrix
-  phonView = new PhonView
-    camera: sceneView.camera
-    el: sceneView.el
-    group: matrixView.render().group
-    collection: matrix
-    matrixView: matrixView
-  sceneView.add(matrixView.group)
-  $('body').append(sceneView.render().el)
+  matrixView = new MatrixView(matrix)
+  sceneView = new SceneView(matrixView)
+  toolsView = new ToolsView(matrixView)
 
   # create board
+  matrix.set [{
+    x: 1,
+    y: 0,
+    direction: 'se',
+    type: 'redirector'
+  }, {
+    x: 1,
+    y: 1,
+    type: 'note'
+  }, {
+    x: 1,
+    y: 5,
+    direction: 'n',
+    type: 'emitter'
+  }]
 
-  boidController.setCell new NoteCell
-    x: 1
-    y: 1
+  # start moving boids around board
+  boidController.start()
 
-  boidController.setCell new RedirectorCell
-    x: 1
-    y: 0
-    direction: 'se'
+  # connect the phon instrument to the speakers
+  phon.connect(output)
 
-  boidController.setCell new EmitterCell
-    x: 0
-    y: 5
-    direction: 'ne'
+  # render the interface
+  $('body').append(sceneView.el)
+  $('body').append(toolsView.render().el)

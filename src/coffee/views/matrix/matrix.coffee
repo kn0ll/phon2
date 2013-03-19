@@ -1,55 +1,54 @@
 define [
-  'jquery',
-  'backbone',
-  'views/matrix/column',
-  'models/matrix/cells/cell',
-  'models/matrix/cells/emitter',
-  'models/matrix/cells/note',
-  'models/matrix/cells/redirector',
-  'views/matrix/cells/cell',
-  'views/matrix/cells/emitter',
-  'views/matrix/cells/note',
-  'views/matrix/cells/redirector'
-], ($, Backbone, ColumnView,
-  Cell, EmitterCell, NoteCell, RedirectorCell,
-  CellView, EmitterCellView, NoteCellView, RedirectorCellView) ->
+  'three',
+  'views/matrix/column'
+], (THREE, ColumnView) ->
 
-  # a matrix view is responsible for creating a 3js group
-  # which manages `column` views (each column can render itself).
-  # ultimately, a group of columns makes up the full matrix
-  class extends Backbone.View
+  # a `matrix` view is a 3js group responsible for managing `column` groups.
+  class extends THREE.Object3D
 
-    options:
-      padding: 10
+    # stores properties and binds add/remove to render methods
+    constructor: (matrix, padding = 10, sideLength = 30) ->
+      THREE.Object3D.apply @
+      @columns = matrix
+      @padding = padding
+      @sideLength = sideLength
 
-    constructor: ->
-      super
-      @group = new THREE.Object3D
-      window.group = @group
-      @columnViews = []
-      @collection.on 'add', @addColumn, @
+      @columns.on 'add', @addColumnView, @
+      @columns.on 'remove', @removeColumnView, @
 
-    # accepts a column model and adds
-    # a new column to the matrix
-    addColumn: (column) ->
-      columns = column.collection
-      x = columns.indexOf(column)
-      columnView = new ColumnView
-        collection: column.cells
-        padding: @options.padding
-      @columnViews[x] = columnView
-      @group.add columnView.render()
+    # adds and positions a single column in the group
+    addColumnView: (column) ->
+      x = @columns.indexOf(column)
+      height = @sideLength * Math.sqrt(3)
+      narrowWidth = @sideLength * 1.5
+      offset = if (x % 2) then (-height - @padding) * 0.5 else 0
+      columnView = new ColumnView(column, @padding, @sideLength)
 
-    findCellByMesh: (mesh) ->
-      model = false
-      _.each @columnViews, (columnView) ->
-        for cellView in columnView.cellViews
-          model = cellView.model if mesh is cellView.mesh
-      model
+      columnView.position.x = (narrowWidth + @padding) * x
+      columnView.position.y = offset
+      @add columnView.render()
 
-    # render should add each collection to
-    # the group
+    # removes a single column from the group
+    removeColumnView: (column) ->
+      meshes = []
+      for child in @children
+        if child.column is column
+          meshes.push child
+      for mesh in meshes
+        @remove mesh
+
+    # add each column to main group
     render: ->
-      @collection.each (column) =>
-        @addColumn(column)
+      @columns.each @addColumnView, @
       @
+
+    # manages "selected" state of cells on click
+    meshClicked: (mesh) ->
+      cell = mesh.cell
+      if cell is @selected_cell
+        selected = cell.get('selected')
+        cell.set 'selected', not selected
+      else
+        @selected_cell?.set 'selected', false
+        cell.set 'selected', true
+      @selected_cell = cell

@@ -1,57 +1,48 @@
 define [
-  'backbone',
+  'jquery',
+  'underscore',
   'three',
-  'models/scene'
-], (Backbone, THREE, Scene) ->
+  'graphics/utils'
+], ($, _, THREE, ThreeUtils) ->
 
-  # the `scene` view is responsible for setting up
+  # the `stage` view is responsible for setting up
   # the 3js stage and camera and re-rendering the scene.
-  # it's element is the 3js canvas.
-  class extends Backbone.View
+  class extends THREE.Scene
 
-    constructor: ->
-      super
-      @model = new Scene
-      width = @model.get('width')
-      height = @model.get('height')
-
-      # create scene
+    # create stage, bind resizing functions
+    constructor: (matrixView) ->
+      THREE.Scene.apply @
       @renderer = new THREE.CanvasRenderer()
-      @scene = new THREE.Scene()
       @camera = new THREE.PerspectiveCamera(100, 1, 1, 1000)
-      @camera.position.z = 300
-      @camera.position.x = 70
-      @camera.position.y = -110
-
-      $(window).on 'resize', _.bind(@onResize, @)
-      @onResize()
-
-      # set canvas as el
-      @setElement @renderer.domElement
+      @el = @renderer.domElement
+      $el = $(@el)
       
-      # keep rerendering the canvas
+      # notify main group of clicks on canvas
+      $el.click (e) =>
+        if clicked = ThreeUtils.computeClickedMesh($el, e, @camera, matrixView)
+          e.preventDefault()
+          matrixView.meshClicked(clicked)
+
+      # manage canvas size
+      $(window).on 'resize', do =>
+        width = window.innerWidth
+        height = window.innerHeight
+
+        @camera.aspect = width / height
+        @camera.updateProjectionMatrix()
+        @renderer.setSize width, height
+        arguments.callee
+
+      # add matrixView object to scene
+      @add(matrixView.render())
+
+      # begin main scene animation
       do =>
-        @render()
+        @renderer.render @, @camera
         webkitRequestAnimationFrame arguments.callee
 
-    onResize: ->
-      width = window.innerWidth
-      height = window.innerHeight
-
-      @camera.aspect = width / height
-      @camera.updateProjectionMatrix()
-      @renderer.setSize width, height
-      @model.set
-        width: width
-        height: height
-
-    # create a proxy view for accessing
-    # the 3js scene's add method.
-    add: ->
-      scene = @scene
-      scene.add.apply scene, arguments
-
-    # render rerenders the 3js scene
-    render: ->
-      @renderer.render @scene, @camera
-      @
+      # centers the camera on an object
+      center = ThreeUtils.computeObject3DCenter(matrixView)
+      @camera.position.x = center.x
+      @camera.position.y = center.y
+      @camera.position.z = 300

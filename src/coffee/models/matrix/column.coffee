@@ -1,15 +1,19 @@
 define [
   'backbone',
-  'models/matrix/cells'
-], (Backbone, Cells) ->
+  'models/matrix/cell'
+], (Backbone, Cell) ->
 
-  # a column contains reference to a `cells` collection.
-  # this `column` class acts as a necessary proxy because
-  # a Backbone collection (Matrix) must only contain a collection
-  # of models (Columns), not a collection of collections (cells)
+  # a collection of `cell` models.
+  class Cells extends Backbone.Collection
+    
+    model: Cell
+
+  # a `column` is a model which contains reference to a collection of cells.
   class extends Backbone.Model
 
     # proxy note events from all cells to the column
     constructor: ->
       super
       @cells = new Cells()
+      for y in [0..@get('height')]
+        @cells.add()
