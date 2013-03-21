@@ -21,7 +21,7 @@ require [
   matrixView = new MatrixView(matrix)
   sceneView = new SceneView(matrixView)
   cellManager = new CellManager(sceneView)
-  toolsView = new ToolsView(matrixView)
+  # toolsView = new ToolsView(matrixView)
 
   # start moving boids around board
   boidController.start()
@@ -31,4 +31,4 @@ require [
 
   # render the interface
   $('body').append(sceneView.el)
-  $('body').append(toolsView.render().el)
+  # $('body').append(toolsView.render().el)
