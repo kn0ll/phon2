@@ -46,7 +46,7 @@ define [
 
     onSelectedChange: (cell, selected) ->
       # @setSidesMaterialIndex (if selected then 1 else 0)
-      @setHeight (if selected then 20 else -20)
+      @animateHeight (if selected then 20 else -20)
 
     onTypeChange: (cell, type) ->
       type = cell.get('type')

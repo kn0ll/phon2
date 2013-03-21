@@ -27,20 +27,23 @@ define [
 
       THREE.GeometryUtils.center shape3d
 
-    animateVertex = (vertex, direction, distance, time, onUpdate) ->
+    tween = (obj, prop, to, time, onUpdate) ->
       options = {}
-      options[direction] = vertex[direction] + distance
-      (new TWEEN.Tween(vertex))
+      options[prop] = to
+      (new TWEEN.Tween(obj))
         .to(options, time)
         .easing(TWEEN.Easing.Quadratic.In)
-        .onUpdate(onUpdate)
+        .onUpdate(onUpdate or ->)
         .start()
 
-    setHeight: (h) ->
+    animateHeight: (h) ->
       geo = @geometry
       update = -> geo.verticesNeedUpdate = true
-      animate = (v) -> animateVertex v, 'z', h, 50, update
+      animate = (v) -> tween v, 'z', v.z + h, 50, update
       animate vertex for vertex in _.last(geo.vertices, 6)
+
+    animateRotation: (r) ->
+      tween @rotation, 'z', r, 100
 
     setSidesMaterialIndex: (i) ->
       for face in _.last(@geometry.faces, 6)

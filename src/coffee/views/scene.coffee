@@ -20,9 +20,9 @@ define [
       
       # notify main group of clicks on canvas
       $el.on 'mousedown', (e) =>
-        if clicked = ThreeUtils.computeClickedMesh($el, e, @camera, matrixView)
-          e.preventDefault()
-          matrixView.meshClicked(clicked)
+        clicked = ThreeUtils.computeClickedMesh($el, e, @camera, matrixView)
+        e.preventDefault()
+        matrixView.onMousedown(e, clicked)
 
       # manage canvas size
       $(window).on 'resize', do =>

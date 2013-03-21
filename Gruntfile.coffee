@@ -77,6 +77,7 @@ module.exports = (grunt) ->
     connect:
       www:
         options:
+          hostname: '0.0.0.0'
           port: port
           base: www
 
