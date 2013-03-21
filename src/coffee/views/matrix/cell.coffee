@@ -3,6 +3,22 @@ define [
   'graphics/hexagon'
 ], (THREE, Hexagon) ->
 
+  materials =
+    grey_wire: new THREE.MeshBasicMaterial(
+      color: 0x707C80
+      wireframe: true
+      wireframeLinewidth: 1)
+    blue_face: new THREE.MeshBasicMaterial(
+      color: 0x77D5D8)
+    yellow_face: new THREE.MeshBasicMaterial(
+      color: 0xFDC648)
+    beige_face: new THREE.MeshBasicMaterial(
+      color: 0xCFCBA9)
+    pink_face: new THREE.MeshBasicMaterial(
+      color: 0xEC4CB5)
+    green_face: new THREE.MeshBasicMaterial(
+      color: 0x02A797)
+
   # a `cell` view is the base hexagon mesh. it is responsible for
   # changing it's `skin` based on it's property changes.
   class extends Hexagon
@@ -18,37 +34,20 @@ define [
 
     # different materials for different states
     skins:
-
-      cell: new THREE.MeshBasicMaterial
-        color: 0x707C80
-        wireframe: true
-        wireframeLinewidth: 1
-
-      occupied: new THREE.MeshLambertMaterial
-        color: 0x77D5D8
-
-      selected: new THREE.MeshLambertMaterial
-        color: 0xFDC648
-        wireframe: true
-        wireframeLinewidth: 1
-
-      emitter: new THREE.MeshBasicMaterial
-        color: 0xCFCBA9
-
-      note: new THREE.MeshBasicMaterial
-        color: 0xEC4CB5
-
-      redirector: new THREE.MeshBasicMaterial
-        color: 0x02A797
+      cell: [materials.grey_wire, materials.yellow_face]
+      occupied: [materials.blue_face, materials.yellow_face]
+      emitter: [materials.beige_face, materials.yellow_face]
+      note: [materials.pink_face, materials.yellow_face]
+      redirector: [materials.green_face, materials.yellow_face]
 
     onOccupiedChange: (cell, occupied) ->
-      return if cell.get('selected')
       type = cell.get('type')
-      @material = if occupied then @skins.occupied else @skins[type]
+      @material.materials = if occupied then @skins.occupied else @skins[type]
 
     onSelectedChange: (cell, selected) ->
-      type = cell.get('type')
-      @material = if selected then @skins.selected else @skins[type]
+      # @setSidesMaterialIndex (if selected then 1 else 0)
+      @setHeight (if selected then 20 else -20)
 
     onTypeChange: (cell, type) ->
-      @material = @skins[type]
+      type = cell.get('type')
+      @material.materials = @skins[type]

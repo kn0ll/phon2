@@ -2,8 +2,9 @@ define [
   'jquery',
   'underscore',
   'three',
+  'tween',
   'graphics/utils'
-], ($, _, THREE, ThreeUtils) ->
+], ($, _, THREE, TWEEN, ThreeUtils) ->
 
   # the `stage` view is responsible for setting up
   # the 3js stage and camera and re-rendering the scene.
@@ -18,7 +19,7 @@ define [
       $el = $(@el)
       
       # notify main group of clicks on canvas
-      $el.click (e) =>
+      $el.on 'mousedown', (e) =>
         if clicked = ThreeUtils.computeClickedMesh($el, e, @camera, matrixView)
           e.preventDefault()
           matrixView.meshClicked(clicked)
@@ -38,6 +39,7 @@ define [
 
       # begin main scene animation
       do =>
+        TWEEN.update()
         @renderer.render @, @camera
         webkitRequestAnimationFrame arguments.callee
 

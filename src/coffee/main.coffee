@@ -21,23 +21,6 @@ require [
   sceneView = new SceneView(matrixView)
   toolsView = new ToolsView(matrixView)
 
-  # create board
-  matrix.set [{
-    x: 1,
-    y: 0,
-    direction: 'se',
-    type: 'redirector'
-  }, {
-    x: 1,
-    y: 1,
-    type: 'note'
-  }, {
-    x: 1,
-    y: 5,
-    direction: 'n',
-    type: 'emitter'
-  }]
-
   # start moving boids around board
   boidController.start()
 

@@ -7,6 +7,7 @@ require.config
     underscore: 'lib/underscore'
     backbone: 'lib/backbone'
     three: 'lib/three'
+    tween: 'lib/tween'
     audiolet: 'lib/Audiolet'
 
   shim:
@@ -23,6 +24,9 @@ require.config
 
     three:
       exports: 'THREE'
+
+    tween:
+      exports: 'TWEEN'
 
     audiolet:
       exports: 'Audiolet'
