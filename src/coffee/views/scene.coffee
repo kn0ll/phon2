@@ -13,16 +13,10 @@ define [
     # create stage, bind resizing functions
     constructor: (matrixView) ->
       THREE.Scene.apply @
+      @matrixView = matrixView
       @renderer = new THREE.CanvasRenderer()
       @camera = new THREE.PerspectiveCamera(100, 1, 1, 1000)
       @el = @renderer.domElement
-      $el = $(@el)
-      
-      # notify main group of clicks on canvas
-      $el.on 'mousedown', (e) =>
-        clicked = ThreeUtils.computeClickedMesh($el, e, @camera, matrixView)
-        e.preventDefault()
-        matrixView.onMousedown(e, clicked)
 
       # manage canvas size
       $(window).on 'resize', do =>

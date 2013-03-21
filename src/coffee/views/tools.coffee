@@ -35,7 +35,9 @@ define [
         matrix_view.rotation.x = start_x_rotation + diff_y * .002
 
       $doc.on 'mousemove', move
-      $doc.on 'mouseup', -> $doc.off 'mousemove', move
+      $doc.on 'mouseup', ->
+        $doc.off 'mouseup', arguments.callee
+        $doc.off 'mousemove', move
 
     render: ->
       @$el.append '<button class="move-camera">move camera</button>'

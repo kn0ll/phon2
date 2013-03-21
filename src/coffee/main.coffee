@@ -5,9 +5,10 @@ require [
   'audio/phon',
   'views/matrix/matrix',
   'views/tools',
-  'views/scene'
+  'views/scene',
+  'views/cell-manager'
 ], (output, BoidController, Matrix, Phon,
-  MatrixView, ToolsView, SceneView) ->
+  MatrixView, ToolsView, SceneView, CellManager) ->
 
   # create matrix / boids
   matrix = new Matrix(8, 5)
@@ -19,6 +20,7 @@ require [
   # create scene
   matrixView = new MatrixView(matrix)
   sceneView = new SceneView(matrixView)
+  cellManager = new CellManager(sceneView)
   toolsView = new ToolsView(matrixView)
 
   # start moving boids around board
