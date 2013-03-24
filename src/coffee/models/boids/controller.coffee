@@ -108,3 +108,11 @@ define [
               x: new_coords.x
               y: new_coords.y
               direction: direction
+
+      # update positions of boids on redirectors
+      boids.each (boid) ->
+        x = boid.get('x')
+        y = boid.get('y')
+        cell = matrix.get(x, y)
+        if cell and cell.get('type') is 'redirector'
+          boid.set 'direction', cell.get('direction')
