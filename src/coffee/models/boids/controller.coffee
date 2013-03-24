@@ -102,8 +102,9 @@ define [
           direction = emitter.get('direction')
           coords = matrix.getCellCoords(emitter)
           adjacent = matrix.getAdjacent(coords.x, coords.y, direction)
-          new_coords = matrix.getCellCoords(adjacent)
-          boids.add
-            x: new_coords.x
-            y: new_coords.y
-            direction: direction
+          if adjacent
+            new_coords = matrix.getCellCoords(adjacent)
+            boids.add
+              x: new_coords.x
+              y: new_coords.y
+              direction: direction
