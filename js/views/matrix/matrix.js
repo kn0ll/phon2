@@ -57,6 +57,12 @@
         return this;
       };
 
+      _Class.prototype.onMousedown = function(e, mesh) {
+        if (!mesh) {
+          return this.columns.changeSelected(null, true);
+        }
+      };
+
       return _Class;
 
     })(THREE.Object3D);

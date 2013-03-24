@@ -8,7 +8,8 @@
       backbone: 'lib/backbone',
       three: 'lib/three',
       tween: 'lib/tween',
-      audiolet: 'lib/Audiolet'
+      audiolet: 'lib/Audiolet',
+      gui: 'lib/backbone.gui/src/gui'
     },
     shim: {
       underscore: {

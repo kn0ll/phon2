@@ -14,3 +14,17 @@ canvas {
   top: 0;
   left: 0;
   z-index: 1; }
+
+#hud {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  padding: 20px;
+  text-align: right; }
+  #hud form {
+    margin-top: 20px; }
+    #hud form.hud-cell .input {
+      margin-bottom: 10px; }
+      #hud form.hud-cell .input label {
+        display: block; }

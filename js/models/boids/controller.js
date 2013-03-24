@@ -66,7 +66,7 @@
           _this = this;
         sequence = new PSequence([true], Infinity);
         return scheduler.play(sequence, 1, function() {
-          return _this.tick(scheduler.beatInBar);
+          return _this.tick(scheduler.scheduler.beatInBar);
         });
       };
 
@@ -99,19 +99,30 @@
           emitters = _(cells).filter(function(cell) {
             return cell.get('type') === 'emitter';
           });
-          return _(emitters).each(function(emitter) {
+          _(emitters).each(function(emitter) {
             var adjacent, coords, direction, new_coords;
             direction = emitter.get('direction');
             coords = matrix.getCellCoords(emitter);
             adjacent = matrix.getAdjacent(coords.x, coords.y, direction);
-            new_coords = matrix.getCellCoords(adjacent);
-            return boids.add({
-              x: new_coords.x,
-              y: new_coords.y,
-              direction: direction
-            });
+            if (adjacent) {
+              new_coords = matrix.getCellCoords(adjacent);
+              return boids.add({
+                x: new_coords.x,
+                y: new_coords.y,
+                direction: direction
+              });
+            }
           });
         }
+        return boids.each(function(boid) {
+          var cell, x, y;
+          x = boid.get('x');
+          y = boid.get('y');
+          cell = matrix.get(x, y);
+          if (cell && cell.get('type') === 'redirector') {
+            return boid.set('direction', cell.get('direction'));
+          }
+        });
       };
 
       return _Class;

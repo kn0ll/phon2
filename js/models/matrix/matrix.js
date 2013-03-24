@@ -19,6 +19,37 @@
         }
       }
 
+      _Class.prototype.add = function() {
+        var cell, _i, _len, _ref, _results;
+        _Class.__super__.add.apply(this, arguments);
+        _ref = this.get();
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cell = _ref[_i];
+          cell.off('change:selected', this.changeSelected, this);
+          _results.push(cell.on('change:selected', this.changeSelected, this));
+        }
+        return _results;
+      };
+
+      _Class.prototype.changeSelected = function(selected_cell, selected) {
+        var cell, _i, _len, _ref, _results;
+        if (selected) {
+          _ref = this.get();
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            cell = _ref[_i];
+            selected = cell.get('selected');
+            if (cell !== selected_cell) {
+              _results.push(cell.set('selected', void 0));
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        }
+      };
+
       _Class.prototype.get = function(x, y) {
         if (x !== void 0 && y !== void 0) {
           if (this.at(x)) {

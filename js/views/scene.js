@@ -24,6 +24,7 @@
           _this.renderer.setSize(width, height);
           return arguments.callee;
         })());
+        $(this.el).on('mousedown', _.bind(this.onMousedown, this));
         this.add(matrixView.render());
         (function() {
           TWEEN.update();
@@ -35,6 +36,20 @@
         this.camera.position.y = center.y;
         this.camera.position.z = 300;
       }
+
+      _Class.prototype.getClickedMesh = function(e) {
+        return ThreeUtils.computeClickedMesh($(this.el), e, this.camera, this.matrixView);
+      };
+
+      _Class.prototype.onMousedown = function(e) {
+        var mesh;
+        mesh = this.getClickedMesh(e);
+        e.preventDefault();
+        if (mesh != null) {
+          mesh.onMousedown(e);
+        }
+        return this.matrixView.onMousedown(e, mesh);
+      };
 
       return _Class;
 
