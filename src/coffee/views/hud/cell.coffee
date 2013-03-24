@@ -62,7 +62,7 @@ define [
       $fieldset.append createInputBlock('type', type_view)
       $fieldset.append createInputBlock('direction', direction_view)
       $fieldset.append createInputBlock('key', key_view)
-      $fieldset.append createInputBlock('velocity', velocity_view)
+      # $fieldset.append createInputBlock('velocity', velocity_view)
       @$el.append $fieldset
 
       @
