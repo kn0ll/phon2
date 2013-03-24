@@ -34,6 +34,7 @@ define [
 
     # populate the form
     render: (cell, selected) ->
+      @$el.empty()
       return @ if not selected
       { x, y } = @matrix.getCellCoords(cell)
       $fieldset = $('<fieldset />')
@@ -57,7 +58,6 @@ define [
         max: 127
 
       # build form
-      @$el.empty()
       $fieldset.append $("<legend>cell (#{x}, #{y})</legend>")
       $fieldset.append createInputBlock('type', type_view)
       $fieldset.append createInputBlock('direction', direction_view)

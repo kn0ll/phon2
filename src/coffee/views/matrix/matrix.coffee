@@ -41,3 +41,7 @@ define [
     render: ->
       @columns.each @addColumnView, @
       @
+
+    onMousedown: (e, mesh) ->
+      if not mesh
+        @columns.changeSelected(null, true)

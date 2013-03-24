@@ -52,4 +52,5 @@ define [
     onMousedown: (e) ->
       mesh = @getClickedMesh(e)
       e.preventDefault()
-      mesh.onMousedown(e) if mesh
+      mesh?.onMousedown(e)
+      @matrixView.onMousedown(e, mesh)
