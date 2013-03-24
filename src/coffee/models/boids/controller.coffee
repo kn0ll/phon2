@@ -59,7 +59,7 @@ define [
     start: ->
       sequence = new PSequence([true], Infinity)
       scheduler.play sequence, 1, =>
-        @tick scheduler.beatInBar
+        @tick scheduler.scheduler.beatInBar
 
     # tick is the main logic responsible
     # for moving boids around (todo: maybe this should be logic

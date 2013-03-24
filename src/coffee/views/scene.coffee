@@ -28,6 +28,9 @@ define [
         @renderer.setSize width, height
         arguments.callee
 
+      # delegate clicks to specific meshes
+      $(@el).on 'mousedown', _.bind(@onMousedown, @)
+
       # add matrixView object to scene
       @add(matrixView.render())
 
@@ -42,3 +45,11 @@ define [
       @camera.position.x = center.x
       @camera.position.y = center.y
       @camera.position.z = 300
+
+    getClickedMesh: (e) ->
+      ThreeUtils.computeClickedMesh($(@el), e, @camera, @matrixView)
+
+    onMousedown: (e) ->
+      mesh = @getClickedMesh(e)
+      e.preventDefault()
+      mesh.onMousedown(e) if mesh

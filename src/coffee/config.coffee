@@ -9,6 +9,7 @@ require.config
     three: 'lib/three'
     tween: 'lib/tween'
     audiolet: 'lib/Audiolet'
+    gui: 'lib/backbone.gui/src/gui'
 
   shim:
 

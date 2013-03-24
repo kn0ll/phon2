@@ -1,0 +1,3 @@
+[submodule "src/coffee/lib/backbone.gui"]
+	path = src/coffee/lib/backbone.gui
+	url = git@github.com:catshirt/backbone.gui.git

@@ -1,14 +1,15 @@
 require [
   'audio/output',
+  'audio/scheduler',
   'models/boids/controller',
   'models/matrix/matrix',
   'audio/phon',
   'views/matrix/matrix',
+  'views/hud/hud',
   'views/tools',
-  'views/scene',
-  'views/cell-manager'
-], (output, BoidController, Matrix, Phon,
-  MatrixView, ToolsView, SceneView, CellManager) ->
+  'views/scene'
+], (output, scheduler, BoidController, Matrix, Phon,
+  MatrixView, HUDView, ToolsView, SceneView) ->
 
   # create matrix / boids
   matrix = new Matrix(8, 5)
@@ -20,7 +21,7 @@ require [
   # create scene
   matrixView = new MatrixView(matrix)
   sceneView = new SceneView(matrixView)
-  cellManager = new CellManager(sceneView)
+  hudView = new HUDView(matrix, scheduler)
   # toolsView = new ToolsView(matrixView)
 
   # start moving boids around board
@@ -31,4 +32,5 @@ require [
 
   # render the interface
   $('body').append(sceneView.el)
+  $('body').append(hudView.render().el)
   # $('body').append(toolsView.render().el)

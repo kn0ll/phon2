@@ -16,6 +16,23 @@ define [
       for x in [0..width]
         @add height: height
 
+    # add should make sure to manage cell selected state
+    # kind of hacky, just rebinds and binds on every single
+    # add instead of adding only on new columns
+    add: ->
+      super
+      for cell in @get()
+        cell.off 'change:selected', @changeSelected, @
+        cell.on 'change:selected', @changeSelected, @
+
+    # when a cell sets it's selected, make sure to deselect any others
+    changeSelected: (selected_cell, selected) ->
+      if selected
+        for cell in @get()
+          selected = cell.get('selected')
+          if cell isnt selected_cell
+            cell.set 'selected', undefined 
+
     # get a specific (or all) cells in the matrix
     get: (x, y) ->
       if x isnt undefined and y isnt undefined
