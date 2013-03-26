@@ -12,10 +12,15 @@
         _Class.__super__.constructor.call(this, context, 0, 1);
         this.instrument = new Instrument(context);
         this.gain = new Gain(context, 0.05);
-        boidController.on('move', function(cell, occupied) {
+        this.keys = [];
+        boidController.on('move', function(cell, occupied, boid) {
           var key, note, velocity;
-          key = cell.get('key');
           velocity = cell.get('velocity');
+          if (occupied) {
+            key = _this.keys[boid.cid] = cell.get('key');
+          } else {
+            key = _this.keys[boid.cid];
+          }
           if (cell.get('type') === 'note') {
             note = occupied ? 144 : 128;
             return _this.instrument.midi(note, key, velocity);

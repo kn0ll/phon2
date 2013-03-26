@@ -40,8 +40,8 @@
           cell = _this.matrix.get(x, y);
           old_cell.set('occupied', false);
           cell.set('occupied', true);
-          _this.trigger('move', old_cell, false);
-          return _this.trigger('move', cell, true);
+          _this.trigger('move', old_cell, false, boid);
+          return _this.trigger('move', cell, true, boid);
         });
         this.boids.on('add', function(boid) {
           var cell, x, y;
@@ -49,7 +49,7 @@
           y = boid.get('y');
           cell = _this.matrix.get(x, y);
           cell.set('occupied', true);
-          return _this.trigger('move', cell, true);
+          return _this.trigger('move', cell, true, boid);
         });
         return this.boids.on('remove', function(boid) {
           var cell, x, y;
@@ -57,7 +57,7 @@
           y = boid.get('y');
           cell = _this.matrix.get(x, y);
           cell.set('occupied', false);
-          return _this.trigger('move', cell, false);
+          return _this.trigger('move', cell, false, boid);
         });
       };
 
@@ -77,18 +77,131 @@
         boids = this.boids;
         deadBoids = [];
         boids.each(function(boid) {
-          var adjacent, coords, direction, x, y;
+          var adjacent, coords, direction, n, nw, se, sw, x, y;
           x = boid.get('x');
           y = boid.get('y');
           direction = boid.get('direction');
           adjacent = matrix.getAdjacent(x, y, direction);
           if (adjacent) {
             coords = matrix.getCellCoords(adjacent);
-            return boid.set({
+            boid.set({
               x: coords.x,
               y: coords.y
             });
           } else {
+            if (direction === 'ne') {
+              if (nw = matrix.getAdjacent(x, y, 'nw')) {
+                coords = matrix.getCellCoords(nw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'nw'
+                });
+              } else if (se = matrix.getAdjacent(x, y, 'se')) {
+                coords = matrix.getCellCoords(se);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'se'
+                });
+              } else if (sw = matrix.getAdjacent(x, y, 'sw')) {
+                coords = matrix.getCellCoords(sw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'sw'
+                });
+              }
+            } else if (direction === 'se') {
+              if (nw = matrix.getAdjacent(x, y, 'sw')) {
+                coords = matrix.getCellCoords(nw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'sw'
+                });
+              } else if (se = matrix.getAdjacent(x, y, 'ne')) {
+                coords = matrix.getCellCoords(se);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'ne'
+                });
+              } else if (sw = matrix.getAdjacent(x, y, 'nw')) {
+                coords = matrix.getCellCoords(sw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'nw'
+                });
+              }
+            } else if (direction === 's') {
+              if (n = matrix.getAdjacent(x, y, 'n')) {
+                coords = matrix.getCellCoords(n);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'n'
+                });
+              }
+            } else if (direction === 'sw') {
+              if (nw = matrix.getAdjacent(x, y, 'se')) {
+                coords = matrix.getCellCoords(nw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'se'
+                });
+              } else if (se = matrix.getAdjacent(x, y, 'nw')) {
+                coords = matrix.getCellCoords(se);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'nw'
+                });
+              } else if (sw = matrix.getAdjacent(x, y, 'ne')) {
+                coords = matrix.getCellCoords(sw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'ne'
+                });
+              }
+            } else if (direction === 'nw') {
+              if (nw = matrix.getAdjacent(x, y, 'ne')) {
+                coords = matrix.getCellCoords(nw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'ne'
+                });
+              } else if (se = matrix.getAdjacent(x, y, 'sw')) {
+                coords = matrix.getCellCoords(se);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'sw'
+                });
+              } else if (sw = matrix.getAdjacent(x, y, 'se')) {
+                coords = matrix.getCellCoords(sw);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 'se'
+                });
+              }
+            } else if (direction === 'n') {
+              if (n = matrix.getAdjacent(x, y, 's')) {
+                coords = matrix.getCellCoords(n);
+                boid.set({
+                  x: coords.x,
+                  y: coords.y,
+                  direction: 's'
+                });
+              }
+            }
+          }
+          if (boid.get('steps') === 10) {
             return deadBoids.push(boid);
           }
         });

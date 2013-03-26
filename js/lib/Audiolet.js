@@ -4743,7 +4743,7 @@ Instrument.prototype.noteOn = function(key, vel) {
 };
 
 Instrument.prototype.noteOff = function(key, vel) {
-    this._voices[key].remove();
+    this._voices[key] && this._voices[key].remove();
 };
 /*!
  * @depends ../core/AudioletInput.js

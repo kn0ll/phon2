@@ -14,7 +14,18 @@
       _Class.prototype.defaults = {
         x: 0,
         y: 0,
-        direction: null
+        direction: null,
+        steps: 0
+      };
+
+      _Class.prototype.set = function(attrs) {
+        var _this = this;
+        _Class.__super__.set.apply(this, arguments);
+        if (attrs.x || attrs.y) {
+          return _.defer(function() {
+            return _this.set('steps', _this.get('steps') + 1);
+          });
+        }
       };
 
       return _Class;
