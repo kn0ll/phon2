@@ -36,8 +36,8 @@ define [
         # if the new / old cell were `note` cells
         # todo: this should be bound to occupied, not triggered
         #       adjacent to
-        @trigger('move', old_cell, false)
-        @trigger('move', cell, true)
+        @trigger('move', old_cell, false, boid)
+        @trigger('move', cell, true, boid)
 
       # when a new boid is created, set it's cells occupied
       @boids.on 'add', (boid) =>
@@ -45,7 +45,7 @@ define [
         y = boid.get('y')
         cell = @matrix.get(x, y)
         cell.set('occupied', true)
-        @trigger('move', cell, true)
+        @trigger('move', cell, true, boid)
 
       # when a new boid is removed, set it's cells occupied
       @boids.on 'remove', (boid) =>
@@ -53,7 +53,7 @@ define [
         y = boid.get('y')
         cell = @matrix.get(x, y)
         cell.set('occupied', false)
-        @trigger('move', cell, false)
+        @trigger('move', cell, false, boid)
 
     # bind tick to the audiolet scheduler
     start: ->
