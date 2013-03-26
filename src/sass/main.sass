@@ -3,6 +3,8 @@ body
   margin: 0
   padding: 0
   overflow: hidden
+  font-family: monaco
+  font-size: 12px
 
 canvas
   position: absolute
@@ -25,11 +27,49 @@ canvas
 
   form
     margin-top: 20px
+    background-color: #f6f6f6
+    padding: 10px
 
-    &.hud-cell
+    fieldset
+      border: none
+      padding: 0
+      margin: 0
+
+      legend
+        font-size: 14px
+        margin-bottom: 10px
+
+      label
+        display: block
+
+      input[type="range"]
+        -webkit-appearance: none
+        background: black
+        height: 1px
+        top: -4px
+        position: relative
+        
+        &::-webkit-slider-thumb
+          -webkit-appearance: none
+          display: block
+          width: 15px
+          height: 15px
+
+          &:after
+            font-size: 22px
+            content: "▴"
+            color: #000
+
+      select
+        border: 1px solid #000
+        background: #fff
+        border-radius: 0
+        padding: 5px
+        -webkit-appearance: none
+        margin-top: 4px
 
       .input
         margin-bottom: 10px
 
-        label
-          display: block
+        &:last-child
+          margin-bottom: 0

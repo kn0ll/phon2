@@ -35,7 +35,10 @@ define [
     # populate the form
     render: (cell, selected) ->
       @$el.empty()
-      return @ if not selected
+      if not selected
+        @$el.hide()
+        return @
+      @$el.show()
       { x, y } = @matrix.getCellCoords(cell)
       $fieldset = $('<fieldset />')
       type_view = new SelectView
