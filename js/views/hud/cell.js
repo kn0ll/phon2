@@ -35,8 +35,10 @@
         var $fieldset, direction_view, key_view, type_view, velocity_view, x, y, _ref;
         this.$el.empty();
         if (!selected) {
+          this.$el.hide();
           return this;
         }
+        this.$el.show();
         _ref = this.matrix.getCellCoords(cell), x = _ref.x, y = _ref.y;
         $fieldset = $('<fieldset />');
         type_view = new SelectView({

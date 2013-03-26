@@ -2,7 +2,9 @@ html,
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  font-family: monaco;
+  font-size: 12px; }
 
 canvas {
   position: absolute;
@@ -23,8 +25,41 @@ canvas {
   padding: 20px;
   text-align: right; }
   #hud form {
-    margin-top: 20px; }
-    #hud form.hud-cell .input {
-      margin-bottom: 10px; }
-      #hud form.hud-cell .input label {
+    margin-top: 20px;
+    background-color: #f6f6f6;
+    padding: 10px; }
+    #hud form fieldset {
+      border: none;
+      padding: 0;
+      margin: 0; }
+      #hud form fieldset legend {
+        font-size: 14px;
+        margin-bottom: 10px; }
+      #hud form fieldset label {
         display: block; }
+      #hud form fieldset input[type="range"] {
+        -webkit-appearance: none;
+        background: black;
+        height: 1px;
+        top: -4px;
+        position: relative; }
+        #hud form fieldset input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          display: block;
+          width: 15px;
+          height: 15px; }
+          #hud form fieldset input[type="range"]::-webkit-slider-thumb:after {
+            font-size: 22px;
+            content: "▴";
+            color: black; }
+      #hud form fieldset select {
+        border: 1px solid black;
+        background: white;
+        border-radius: 0;
+        padding: 5px;
+        -webkit-appearance: none;
+        margin-top: 4px; }
+      #hud form fieldset .input {
+        margin-bottom: 10px; }
+        #hud form fieldset .input:last-child {
+          margin-bottom: 0; }
