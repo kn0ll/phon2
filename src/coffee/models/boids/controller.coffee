@@ -87,6 +87,133 @@ define [
 
         # otherwise it's hit the end of the board
         else
+
+          if direction is 'ne'
+
+            # hit right side border
+            if nw = matrix.getAdjacent(x, y, 'nw')
+              coords = matrix.getCellCoords(nw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'nw'
+
+            # hit top border
+            else if se = matrix.getAdjacent(x, y, 'se')
+              coords = matrix.getCellCoords(se)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'se'
+                
+            # hit corner
+            else if sw = matrix.getAdjacent(x, y, 'sw')
+              coords = matrix.getCellCoords(sw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'sw'
+
+          else if direction is 'se'
+
+            # hit right side border
+            if nw = matrix.getAdjacent(x, y, 'sw')
+              coords = matrix.getCellCoords(nw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'sw'
+
+            # hit bottom border
+            else if se = matrix.getAdjacent(x, y, 'ne')
+              coords = matrix.getCellCoords(se)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'ne'
+                
+            # hit corner
+            else if sw = matrix.getAdjacent(x, y, 'nw')
+              coords = matrix.getCellCoords(sw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'nw'
+
+          else if direction is 's'
+
+            # hit right side border
+            if n = matrix.getAdjacent(x, y, 'n')
+              coords = matrix.getCellCoords(n)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'n'
+
+          else if direction is 'sw'
+
+            # hit left side border
+            if nw = matrix.getAdjacent(x, y, 'se')
+              coords = matrix.getCellCoords(nw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'se'
+
+            # hit bottom border
+            else if se = matrix.getAdjacent(x, y, 'nw')
+              coords = matrix.getCellCoords(se)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'nw'
+                
+            # hit corner
+            else if sw = matrix.getAdjacent(x, y, 'ne')
+              coords = matrix.getCellCoords(sw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'ne'
+
+          else if direction is 'nw'
+
+            # hit left side border
+            if nw = matrix.getAdjacent(x, y, 'ne')
+              coords = matrix.getCellCoords(nw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'ne'
+
+            # hit top border
+            else if se = matrix.getAdjacent(x, y, 'sw')
+              coords = matrix.getCellCoords(se)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'sw'
+                
+            # hit corner
+            else if sw = matrix.getAdjacent(x, y, 'se')
+              coords = matrix.getCellCoords(sw)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 'se'
+
+          else if direction is 'n'
+
+            # hit right side border
+            if n = matrix.getAdjacent(x, y, 's')
+              coords = matrix.getCellCoords(n)
+              boid.set
+                x: coords.x
+                y: coords.y
+                direction: 's'
+          
+        # remove all boids that have moved 10 times
+        if boid.get('steps') is 10
           deadBoids.push(boid)
 
       # remove all dead boids
@@ -109,10 +236,11 @@ define [
               y: new_coords.y
               direction: direction
 
-      # update positions of boids on redirectors
+      # update directions of boids on redirectors
       boids.each (boid) ->
         x = boid.get('x')
         y = boid.get('y')
         cell = matrix.get(x, y)
         if cell and cell.get('type') is 'redirector'
           boid.set 'direction', cell.get('direction')
+        
