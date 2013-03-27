@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   define(['backbone'], function(Backbone) {
-    return (function(_super) {
+    return window.Boid = (function(_super) {
 
       __extends(_Class, _super);
 
@@ -18,14 +18,11 @@
         steps: 0
       };
 
-      _Class.prototype.set = function(attrs) {
-        var _this = this;
-        _Class.__super__.set.apply(this, arguments);
+      _Class.prototype.set = function(attrs, options) {
         if (attrs.x || attrs.y) {
-          return _.defer(function() {
-            return _this.set('steps', _this.get('steps') + 1);
-          });
+          attrs.steps = (this.get('steps') || 0) + 1;
         }
+        return _Class.__super__.set.call(this, attrs, options);
       };
 
       return _Class;
